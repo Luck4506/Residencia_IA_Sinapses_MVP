@@ -1,0 +1,10 @@
+{
+  "versao": "v1",
+  "classificacao_habilitada": false,
+  "sha256_componentes_kmeans": "13d96db6b2489e2c2c49ec17f2dc365cb90aa34ee5c540ff276fd1d1ea1bbf21",
+  "classe_positiva": 1,
+  "colunas_entrada": [],
+  "limiar": null,
+  "sha256_classificador": {},
+  "observacao": "Preencher após treinar, exportar e validar XGBoost com os 30 atributos deste extrator. Não habilitar com modelos de TF-IDF + features ou de apenas 24 atributos."
+}

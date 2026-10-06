@@ -1,0 +1,13 @@
+fastapi==0.142.2
+uvicorn==0.54.0
+pydantic==2.13.5
+numpy==2.5.3
+pandas==3.0.5
+scipy==1.18.1
+scikit-learn==1.9.0
+joblib==1.6.0
+xgboost==3.4.1
+phonenumbers==9.0.39
+linkify-it-py==2.2.0
+regex==2026.9.10
+language-tool-python==3.4.0

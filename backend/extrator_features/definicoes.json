@@ -1,0 +1,146 @@
+[
+  {
+    "nome": "solicita_senha",
+    "definicao": "Pedido explícito de senha de acesso.",
+    "funcionamento": "Procura um verbo de solicitação e o objeto senha próximos, preservando a negação. A adaptação inclui pedidos polidos como poderia informar.",
+    "limite": "Uma confirmação de troca de senha ou orientação para não compartilhar não é solicitação."
+  },
+  {
+    "nome": "solicita_codigo_autenticacao",
+    "definicao": "Pedido de código de autenticação, token ou verificação recebido por SMS/WhatsApp.",
+    "funcionamento": "Acrescenta pedidos de código recebido/enviado por SMS ou WhatsApp; conserva exclusão de códigos de produto e cartão.",
+    "limite": "Código de produto ou cupom não conta; código de segurança do cartão pertence à feature de cartão."
+  },
+  {
+    "nome": "solicita_dados_bancarios",
+    "definicao": "Pedido de banco, agência, número da conta ou dados bancários.",
+    "funcionamento": "Relaciona ação afirmativa a banco/agência/conta bancária. O nome conta isolado é insuficiente.",
+    "limite": "Conta ativa e conta de e-mail não são pedidos de dados bancários."
+  },
+  {
+    "nome": "solicita_dados_pessoais",
+    "definicao": "Pedido de identificação ou contato: CPF, RG, nome completo, nascimento, endereço, telefone ou e-mail.",
+    "funcionamento": "Busca verbo de solicitação seguido de um dos identificadores do vocabulário fixo.",
+    "limite": "CPF apenas mencionado não basta. Listas e construções não previstas podem não ser reconhecidas."
+  },
+  {
+    "nome": "solicita_dados_cartao",
+    "definicao": "Pedido de número, validade, CVV/CVC, nome impresso ou código de segurança do cartão.",
+    "funcionamento": "CVV/CVC já qualificam o objeto; validade e código de segurança exigem contexto de cartão. A adaptação reconhece listas explícitas de número, validade e CVV.",
+    "limite": "Aviso de entrega do cartão não é solicitação; pedido de agência não pertence a esta feature."
+  },
+  {
+    "nome": "solicita_atualizacao_cadastro",
+    "definicao": "Pedido para atualizar, confirmar, regularizar ou completar cadastro/dados.",
+    "funcionamento": "Exige ação cadastral direta ou finalidade explícita de um comando, como acesse para confirmar seus dados.",
+    "limite": "Cadastro desatualizado é um estado; sem pedido não ativa esta feature."
+  },
+  {
+    "nome": "solicita_pagamento",
+    "definicao": "Pedido de pagamento, transferência, depósito, quitação ou PIX.",
+    "funcionamento": "Aceita verbos financeiros diretos ou combina ação genérica com pagamento, taxa, boleto, PIX ou valor monetário.",
+    "limite": "Recebemos seu PIX é confirmação, não pedido; PIX e pagamento são features diferentes."
+  },
+  {
+    "nome": "solicita_clique",
+    "definicao": "Comando para clicar/acessar/tocar link, botão ou endereço apresentado.",
+    "funcionamento": "Transforma URLs reconhecidas em marcador de endereço e relaciona esse alvo ao verbo clique, acesse, toque ou abra.",
+    "limite": "Link sozinho não ativa a feature; não clique também não. Acesso sem destino explícito é tratado conservadoramente."
+  },
+  {
+    "nome": "solicita_ligacao",
+    "definicao": "Pedido de ligação telefônica ao destinatário.",
+    "funcionamento": "Detecta ligue/telefone e expressões entre em contato pelo telefone, excluindo ligar aparelhos.",
+    "limite": "Número de telefone sozinho e contato por e-mail não são pedido de ligação."
+  },
+  {
+    "nome": "menciona_bloqueio_conta",
+    "definicao": "Menção a bloqueio, suspensão ou cancelamento de conta, cartão, cadastro, serviço ou acesso.",
+    "funcionamento": "Exige objeto e estado próximos, em ambas as ordens. Pode ser estado atual ou consequência futura.",
+    "limite": "Bloqueio de rua ou cancelamento de pedido não contam; negação explícita de bloqueio é excluída nesta operacionalização."
+  },
+  {
+    "nome": "carga_emocional",
+    "definicao": "Proporção de ocorrências de palavras emocionais entre palavras analisáveis.",
+    "funcionamento": "Preserva proporção lexical e cria baixa/média/alta pelos tercis positivos congelados, sem usar as categorias anotadas.",
+    "limite": "Faixas relativas à distribuição lexical deste corpus, não níveis psicológicos validados; léxico limitado, sem contexto de negação/ironia. A proporção numérica é preservada."
+  },
+  {
+    "nome": "possui_urgencia",
+    "definicao": "Pressão para agir rapidamente ou antes de prazo próximo.",
+    "funcionamento": "Acrescenta prazos curtos por extenso (uma, duas, três, quatro, seis, doze e vinte e quatro horas); mantém exigência de ação e exclusão de relatos.",
+    "limite": "Compra entregue hoje é relato. Uma data passada não implica urgência; datas livres e prazos escritos por extenso têm cobertura limitada."
+  },
+  {
+    "nome": "possui_ameaca",
+    "definicao": "Consequência negativa explicitamente condicionada à ação ou omissão do destinatário.",
+    "funcionamento": "Amplia consequências explícitas com protesto e negativação, mantendo a exigência de condição e exclusão de garantias negativas.",
+    "limite": "Sua conta está bloqueada não contém por si só condição. Condicionais longas ou implícitas exigem revisão humana."
+  },
+  {
+    "nome": "possui_linguagem_alarmista",
+    "definicao": "Vocabulário explícito de gravidade, perigo, medo ou alerta.",
+    "funcionamento": "Busca expressões como alerta, atenção, risco imediato, situação grave e atividade suspeita, com filtro de negação local.",
+    "limite": "Maiúsculas, exclamações e imediatamente sozinhos não bastam. Atenção também pode ser um aviso legítimo."
+  },
+  {
+    "nome": "possui_recompensa",
+    "definicao": "Alegação de prêmio, brinde ou benefício que o destinatário ganhou, ganhará ou pode resgatar por seleção/contato.",
+    "funcionamento": "Reconhece você ganhou/foi sorteado/selecionado e prêmio, bônus ou brinde associado a recebimento/disponibilidade.",
+    "limite": "Um prêmio entregue a outra pessoa ou um sorteio não ganho não contam."
+  },
+  {
+    "nome": "possui_reembolso",
+    "definicao": "Alegação de devolução, restituição, estorno ou valor anteriormente pago disponível ao destinatário.",
+    "funcionamento": "Exige devolução/restituição/estorno; crédito disponível isolado deixa de ser reembolso. Aceita estorno liberado.",
+    "limite": "Política de reembolso, reembolso negado e oferta de empréstimo não são devoluções."
+  },
+  {
+    "nome": "possui_vantagem_inesperada",
+    "definicao": "Indício textual de benefício extraordinário, seleção inesperada ou oportunidade exclusiva.",
+    "funcionamento": "Aproveita sinais de recompensa e expressões como crédito inesperado, desconto extraordinário, benefício liberado ou sem ter solicitado.",
+    "limite": "A expectativa real da pessoa é desconhecida. É uma aproximação textual com sobreposição a recompensa e oferta."
+  },
+  {
+    "nome": "possui_oferta_financeira",
+    "definicao": "Proposta de crédito, empréstimo, financiamento, investimento ou ganho financeiro.",
+    "funcionamento": "Reconhece produto financeiro pré-aprovado com espaço/hífen e sem possessivo, mantendo exclusão de simples preço.",
+    "limite": "Preço de pacote de internet ou mercadoria não é automaticamente oferta financeira. Alguns rótulos originais podem seguir interpretação mais ampla."
+  },
+  {
+    "nome": "possui_url",
+    "definicao": "Presença de URL reconhecível na mensagem.",
+    "funcionamento": "Usa extrator linkify-it-py com validação estrutural do host; mantém presença separada de solicitação de clique.",
+    "limite": "E-mail isolado não conta. Não abre o link nem avalia reputação; novas terminações de domínio podem escapar."
+  },
+  {
+    "nome": "possui_url_encurtada",
+    "definicao": "URL cujo domínio pertence à lista fixa de serviços encurtadores.",
+    "funcionamento": "Usa o mesmo extrator de URL e comparação exata com lista fixa de cinco domínios, sem confundir caminho ou subdomínio.",
+    "limite": "URL curta não significa encurtador. bit.ly.exemplo.com não é bit.ly. A lista limitada não cobre todos os serviços existentes."
+  },
+  {
+    "nome": "possui_telefone",
+    "definicao": "Presença de telefone brasileiro em formato reconhecível.",
+    "funcionamento": "Exige validade BR e mascara identificadores, inclusive código de autenticação/verificação/acesso/segurança; rejeita +44.",
+    "limite": "Validade estrutural não confirma linha ativa. Identificadores sem rótulo e alguns formatos ambíguos podem causar erros."
+  },
+  {
+    "nome": "possui_pix",
+    "definicao": "Menção explícita ao sistema PIX.",
+    "funcionamento": "Detecta palavra PIX com limites Unicode fora de URLs; continua positiva em negações que mencionam o sistema.",
+    "limite": "Chave numérica sozinha não basta. Não faça PIX ainda menciona o sistema; pixel, Pixar e domínio com pix não contam."
+  },
+  {
+    "nome": "possui_erros_ortografia_gramatica",
+    "definicao": "Ao menos um erro identificado por regras ou ferramenta previamente fixadas.",
+    "funcionamento": "Combina LanguageTool local filtrado com regras manuais já conhecidas; expõe alertas aceitos/ignorados, sem fallback silencioso.",
+    "limite": "Não pune automaticamente emoji ou falta de pontuação. Nomes/marcas podem gerar falsos positivos. Contagem é de alertas, não necessariamente palavras distintas."
+  },
+  {
+    "nome": "possui_chamada_acao",
+    "definicao": "Comando explícito dirigido ao destinatário, como responder, enviar, acessar, ligar ou pagar.",
+    "funcionamento": "Procura imperativos e pedidos indiretos afirmativos; a adaptação reconhece pedidos polidos adicionais.",
+    "limite": "Relatos no passado e orientações negativas não contam. Discurso citado, ironia e escopos longos de negação têm cobertura limitada."
+  }
+]

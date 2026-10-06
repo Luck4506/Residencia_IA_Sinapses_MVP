@@ -1,0 +1,11 @@
+{
+  "metodo": "tercis das proporções estritamente positivas; zero na faixa baixa; empates na faixa inferior",
+  "limite_baixa": 0.058823529411764705,
+  "limite_media": 0.07142857142857142,
+  "n_referencia": 1347,
+  "n_proporcoes_positivas": 114,
+  "referencia_sha256": "2defcaef52bdd3cbb95fadb43bf915e1950f95ca443e4c928ff7ad512fafed50",
+  "usa_rotulos_originais": false,
+  "recalcular_automaticamente": false,
+  "interpretacao": "faixas relativas ao corpus, não intensidade psicológica validada"
+}
