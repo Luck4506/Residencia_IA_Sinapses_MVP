@@ -17,7 +17,7 @@ PASTA=Path(__file__).parent
 DEFINICOES=json.loads((PASTA/'definicoes.json').read_text())
 NOMES=[d['nome'] for d in DEFINICOES]
 BINARIAS=[n for n in NOMES if n!='carga_emocional']
-MODULOS={n:import_module(f'{__package__}.features.feature_{i:02d}_{n}') for i,n in enumerate(NOMES, 1)}
+MODULOS={d['nome']:import_module(f"{__package__}.features.{d['modulo']}") for d in DEFINICOES}
 ESTRUTURAIS={'possui_url','possui_url_encurtada','possui_telefone','possui_pix','possui_erros_ortografia_gramatica','carga_emocional'}
 
 

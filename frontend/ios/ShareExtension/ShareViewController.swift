@@ -1,5 +1,3 @@
-// FINALIDADE: Entrada alternativa iOS: recebe texto pelo compartilhamento e apresenta a interface nativa da extensão. O resultado ainda é demonstrativo.
-// FLUXO: suporte ao frontend; os modelos de IA pertencem à API Python.
 import UIKit
 import SwiftUI
 import UniformTypeIdentifiers
@@ -60,6 +58,41 @@ private struct SharedMessageView: View {
     @State private var overrideScheme: ColorScheme?
     @State private var result = false
     @State private var progress = 0.0
+    @State private var analyzing = false
+    @State private var error: String?
+    @State private var analysis: Analysis?
+    private var settings: [String: String] {
+        let encoded = Bundle.main.object(forInfoDictionaryKey: "SinapsesDartDefines") as? String ?? ""
+        return encoded.split(separator: ",").reduce(into: [:]) { values, part in
+            guard let data = Data(base64Encoded: String(part)), let text = String(data: data, encoding: .utf8),
+                  let equal = text.firstIndex(of: "=") else { return }
+            values[String(text[..<equal])] = String(text[text.index(after: equal)...])
+        }
+    }
+
+    private func analyze() async {
+        analyzing = true; error = nil
+        defer { analyzing = false }
+        do {
+            let base = settings["API_URL"] ?? "http://127.0.0.1:8000"
+            guard let url = URL(string: base.trimmingCharacters(in: CharacterSet(charactersIn: "/")) + "/analisar") else { throw URLError(.badURL) }
+            var request = URLRequest(url: url, timeoutInterval: 90)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = try JSONSerialization.data(withJSONObject: ["mensagem": model.text])
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+                let detail = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
+                error = detail?["detail"] as? String ?? "Não foi possível analisar. Confira o texto (até 5.000 caracteres)."
+                return
+            }
+            let value = try JSONDecoder().decode(Analysis.self, from: data)
+            guard value.score_golpe.isFinite, (0...1).contains(value.score_golpe) else { throw URLError(.cannotParseResponse) }
+            analysis = value; result = true
+        } catch {
+            self.error = "Não foi possível analisar a mensagem. Confira a conexão com a API e tente novamente."
+        }
+    }
     private var accent: Color { (overrideScheme ?? systemScheme) == .dark ? .orange : Color(red: 0.61, green: 0.30, blue: 0) }
     private let questions = [
         ("Eu conheço quem enviou?", "Confira o número ou endereço completo. Um nome conhecido e uma foto de perfil, sozinhos, não confirmam a identidade."),
@@ -67,6 +100,10 @@ private struct SharedMessageView: View {
         ("Pedem dinheiro, senha ou algum código?", "Antes de responder, confirme o pedido por outro canal que você já conhece e usa."),
         ("Consigo confirmar no canal oficial?", "Abra o aplicativo ou site oficial por conta própria e confira a informação, sem usar o link da mensagem.")
     ]
+
+    private var riskColor: Color { analysis?.classe == 1
+        ? Color(red: 201.0/255, green: 117.0/255, blue: 117.0/255)
+        : Color(red: 98.0/255, green: 168.0/255, blue: 137.0/255) }
 
     private var dark: Bool { (overrideScheme ?? systemScheme) == .dark }
     private var pageColor: Color { dark ? Color(red: 0.063, green: 0.067, blue: 0.075) : Color(red: 0.969, green: 0.965, blue: 0.949) }
@@ -133,19 +170,21 @@ private struct SharedMessageView: View {
                             messageEditor
                                 .frame(height: editorHeight)
                                 .focused($editing)
+                                .disabled(analyzing)
                                 .accessibilityLabel("Mensagem recebida")
                         }.padding(18).background(panelColor).cornerRadius(20)
                             .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.secondary.opacity(0.22), lineWidth: 1))
                         Button {
                             editing = false
-                            result = true
+                            Task { await analyze() }
                         } label: {
-                            Label("Avaliar mensagem", systemImage: "sparkles")
+                            Label(analyzing ? "Avaliando…" : "Avaliar mensagem", systemImage: "sparkles")
                                 .font(.body.weight(.semibold)).frame(maxWidth: .infinity).padding(16)
                         }
                         .buttonStyle(.plain)
                         .background(Color(red: 0.937, green: 0.573, blue: 0.180)).foregroundColor(.black).cornerRadius(16)
-                        .disabled(model.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        .disabled(analyzing || model.text.count > 5000 || model.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        if let error { Text(error).foregroundColor(.red) }
                     }
                 }.padding(24).frame(maxWidth: 520).frame(maxWidth: .infinity)
             }
@@ -168,14 +207,31 @@ private struct SharedMessageView: View {
                 Text("CHANCE DE SER GOLPE").font(.caption.weight(.bold)).tracking(2).foregroundColor(accent)
                 ZStack {
                     Circle().stroke(Color.secondary.opacity(0.2), lineWidth: 15)
-                    Circle().trim(from: 0, to: progress).stroke(accent, style: StrokeStyle(lineWidth: 15, lineCap: .round)).rotationEffect(.degrees(-90))
-                    VStack { Text("78%").font(.system(size: 54, weight: .bold)); Text("risco elevado").foregroundColor(.secondary) }
+                    Circle().trim(from: 0, to: progress).stroke(riskColor, style: StrokeStyle(lineWidth: 15, lineCap: .round)).rotationEffect(.degrees(-90))
+                    VStack { Text(String(format: "%.1f%%", (analysis?.score_golpe ?? 0) * 100)).font(.system(size: 54, weight: .bold)); Text(analysis?.classe == 1 ? "possível golpe" : "menor risco indicado").foregroundColor(.secondary) }
                 }.frame(width: 200, height: 200)
-                    .accessibilityElement(children: .ignore).accessibilityLabel("78 por cento, valor ilustrativo")
-                    .onAppear { withAnimation(.easeOut(duration: 1)) { progress = 0.78 } }
-                Text("Porcentagem ilustrativa").fontWeight(.semibold).foregroundColor(accent)
-                Text("Este esboço sempre mostra 78%. Ainda não há uma IA calculando a probabilidade de golpe.").font(.subheadline).foregroundColor(.secondary)
+                    .accessibilityElement(children: .ignore).accessibilityLabel(String(format: "%.1f por cento de chance de golpe", (analysis?.score_golpe ?? 0) * 100))
+                    .onAppear { withAnimation(.easeOut(duration: 1)) { progress = analysis?.score_golpe ?? 0 } }
+                Text("Avaliação do modelo").fontWeight(.semibold).foregroundColor(accent)
+                Text("A avaliação pode errar. Confira a mensagem e a identidade do remetente antes de agir.").font(.subheadline).foregroundColor(.secondary)
             }.padding(24).frame(maxWidth: .infinity).background(panelColor).cornerRadius(22)
+            if let analysis {
+                Text("Principais sinais identificados").font(.headline)
+                if analysis.features_importantes.isEmpty {
+                    Text("Nenhum atributo estruturado detectado aumentou o risco nesta análise. O modelo também considera o texto completo.").font(.subheadline)
+                }
+                ForEach(analysis.features_importantes, id: \.feature) { item in
+                    Text("• " + item.feature.replacingOccurrences(of: "_", with: " "))
+                }
+                if settings["SHOW_DIAGNOSTICS"] != "false" {
+                    DisclosureGroup("Diagnóstico: todas as features") {
+                        Text("Uso interno. 0 = não detectado; 1 = detectado. Carga emocional exibida por categoria; o modelo recebe 0/1/2.").font(.caption)
+                        ForEach(analysis.diagnostic.keys.sorted(), id: \.self) { name in
+                            HStack { Text(name).font(.caption); Spacer(); Text("\(analysis.diagnostic[name] ?? 0)").bold() }
+                        }
+                    }
+                }
+            }
             Text("Antes de confiar, pergunte:").font(.title2.bold())
             VStack(alignment: .leading, spacing: 18) {
                 ForEach(questions.indices, id: \.self) { index in
@@ -189,4 +245,16 @@ private struct SharedMessageView: View {
                 .background(Color.orange).foregroundColor(.black).cornerRadius(16)
         }
     }
+}
+
+private struct ImportantFeature: Decodable {
+    let feature: String
+}
+private struct Analysis: Decodable {
+    let score_golpe: Double
+    let classe: Int
+    let features_importantes: [ImportantFeature]
+    let features_binarias: [String: Int]
+    let features_clusters: [String: Int]
+    var diagnostic: [String: Int] { features_binarias.merging(features_clusters) { first, _ in first } }
 }

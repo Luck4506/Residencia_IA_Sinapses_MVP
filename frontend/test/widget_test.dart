@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:protitipo_tela_aplicacao/api.dart';
 // FINALIDADE: Verifica a navegação e os elementos da interface Flutter; executado apenas pelos testes.
 // FLUXO: suporte ao frontend; os modelos de IA pertencem à API Python.
 import 'package:flutter/material.dart';
@@ -11,7 +15,16 @@ void main() {
     final dispatcher = tester.binding.platformDispatcher;
     addTearDown(dispatcher.clearPlatformBrightnessTestValue);
     dispatcher.platformBrightnessTestValue = Brightness.dark;
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(MyApp(api: SmsApi(client: MockClient((request) async {
+      expect(request.url.path, '/analisar');
+      expect(jsonDecode(request.body)['mensagem'], isNotEmpty);
+      return http.Response(jsonEncode({
+        'score_golpe': 0.864, 'classe': 1,
+        'features_importantes': [{'feature': 'solicita_dados_cadastro'}],
+        'features_binarias': {'solicita_dados_cadastro': 1, 'solicita_senha': 0},
+        'features_clusters': {'cluster_0': 1},
+      }), 200);
+    }))));
     await tester.pumpAndSettle();
     expect(
       Theme.of(tester.element(find.byType(Scaffold))).brightness,
@@ -31,7 +44,16 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(MyApp(api: SmsApi(client: MockClient((request) async {
+      expect(request.url.path, '/analisar');
+      expect(jsonDecode(request.body)['mensagem'], isNotEmpty);
+      return http.Response(jsonEncode({
+        'score_golpe': 0.864, 'classe': 1,
+        'features_importantes': [{'feature': 'solicita_dados_cadastro'}],
+        'features_binarias': {'solicita_dados_cadastro': 1, 'solicita_senha': 0},
+        'features_clusters': {'cluster_0': 1},
+      }), 200);
+    }))));
     expect(
       Theme.of(tester.element(find.byType(Scaffold))).brightness,
       Brightness.light,
@@ -55,7 +77,16 @@ void main() {
     await tester.pumpAndSettle(const Duration(seconds: 1));
     expect(find.text('CHANCE DE SER GOLPE'), findsOneWidget);
     await tester.pumpAndSettle();
-    expect(find.text('78%'), findsOneWidget);
+    expect(find.text('86.4%'), findsOneWidget);
+    expect(find.text('solicita_senha'), findsNothing);
+    await tester.ensureVisible(find.byKey(const Key('diagnostico')));
+    await tester.tap(find.text('Diagnóstico: todas as features'));
+    await tester.pumpAndSettle();
+    expect(find.text('solicita_senha'), findsOneWidget);
+    expect(find.text('solicita_dados_cadastro'), findsOneWidget);
+    await tester.tap(find.text('Diagnóstico: todas as features'));
+    await tester.pumpAndSettle();
+    expect(find.text('solicita_senha'), findsNothing);
     await tester.ensureVisible(find.text('Eu conheço quem enviou?'));
     await tester.tap(find.text('Eu conheço quem enviou?'));
     await tester.pumpAndSettle();
@@ -92,7 +123,16 @@ void main() {
           null,
         );
       });
-      await tester.pumpWidget(const MyApp());
+      await tester.pumpWidget(MyApp(api: SmsApi(client: MockClient((request) async {
+      expect(request.url.path, '/analisar');
+      expect(jsonDecode(request.body)['mensagem'], isNotEmpty);
+      return http.Response(jsonEncode({
+        'score_golpe': 0.864, 'classe': 1,
+        'features_importantes': [{'feature': 'solicita_dados_cadastro'}],
+        'features_binarias': {'solicita_dados_cadastro': 1, 'solicita_senha': 0},
+        'features_clusters': {'cluster_0': 1},
+      }), 200);
+    }))));
       await tester.pumpAndSettle();
       expect(find.text('BOAS-VINDAS'), findsNothing);
       expect(

@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.cache_huggingface/
+cache_languagetool/
+backend/modelos/v1/embedding/
+backend/ferramentas/
+modelo_treinado.zip
+modelo treinado/
+*.log

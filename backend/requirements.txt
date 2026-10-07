@@ -11,3 +11,6 @@ phonenumbers==9.0.39
 linkify-it-py==2.2.0
 regex==2026.9.10
 language-tool-python==3.4.0
+sentence-transformers==5.7.0
+transformers==5.19.0
+torch==2.14.1

@@ -1,0 +1,13 @@
+{
+    "quantidade_clusters": 6,
+    "nomes_features_clusters": [
+        "cluster_0",
+        "cluster_1",
+        "cluster_2",
+        "cluster_3",
+        "cluster_4",
+        "cluster_5"
+    ],
+    "random_state": 42,
+    "n_init": "auto"
+}

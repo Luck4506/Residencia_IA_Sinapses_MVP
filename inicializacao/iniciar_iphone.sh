@@ -34,4 +34,4 @@ if [[ ! -L build/ios || ! -d build/ios ]]; then
   ln -s "$IOS_TEMP/ios" build/ios
 fi
 flutter pub get
-exec flutter run -d "$SIMULADOR_ID"
+exec flutter run -d "$SIMULADOR_ID" --dart-define="API_URL=${API_URL:-http://127.0.0.1:8000}" --dart-define="SHOW_DIAGNOSTICS=${SHOW_DIAGNOSTICS:-true}"

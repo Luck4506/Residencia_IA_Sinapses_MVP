@@ -7,6 +7,12 @@ preservando offsets. Sugestões estilísticas e de tipografia são excluídas:
 contam apenas issue_type 'misspelling' e 'grammar'. Não corrigimos o texto.
 """
 
+import os
+from pathlib import Path
+
+# O download inicial fica dentro do projeto e é reutilizado nas próximas execuções.
+os.environ.setdefault("LTP_PATH", str(Path(__file__).resolve().parents[2] / "ferramentas"))
+
 from extrator_features.bibliotecas.apoio_01_texto import validar
 from extrator_features.bibliotecas.apoio_02_urls import mascarar_urls
 

@@ -1,5 +1,5 @@
-# Artefatos carregados na inicialização (etapa 02)
+# Modelos ativos
 
-O conjunto ativo fica em `v1/`. Para escolher outra versão, altere `PASTA_MODELOS` em `../api/etapa_02_modelos.py`. Os arquivos do modelo mantêm os nomes definidos pelo contrato; não são scripts executados em sequência.
+`v1/` contém os artefatos entregues em `modelo treinado/models`, copiados sem alteração: XGBoost, configurações, vocabulário/IDF e centroides K-means. O encoder exigido pelo XGBoost fica em `v1/embedding/` e é preparado por `inicializacao/preparar_modelos.py`.
 
-Há TF-IDF, K-means e codificador exportados. O XGBoost compatível com as 30 features continua pendente.
+A entrada tem 412 valores: 384 do texto, 22 atributos e seis clusters. Não é necessário treinar novamente. Consulte o README da raiz para instalação, execução e contrato da API.
