@@ -8,4 +8,5 @@ if [[ ! -x "$PYTHON_API" ]]; then
   exit 1
 fi
 cd "$PROTOTIPO_DIR/backend"
-exec "$PYTHON_API" -m uvicorn api.main:app --host "${API_HOST:-127.0.0.1}" --port "${API_PORT:-8000}" "$@"
+echo "Carregando dependências da API…"
+exec "$PYTHON_API" -u -m uvicorn api.main:app --host "${API_HOST:-127.0.0.1}" --port "${API_PORT:-8000}" "$@"

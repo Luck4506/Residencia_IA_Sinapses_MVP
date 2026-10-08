@@ -20,7 +20,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		AC28FCC17E54A214EA62FE28 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9133176C2C3BF90A666A5CA7 /* ShareViewController.swift */; };
-		B324F7B2B9ABDA7D34084007 /* tic-em-trilhas.png in Resources */ = {isa = PBXBuildFile; fileRef = F95C44C8C2509FDC190E0193 /* tic-em-trilhas.png */; };
+		B324F7B2B9ABDA7D34084007 /* logo-PUC-85-anos-color.png in Resources */ = {isa = PBXBuildFile; fileRef = F95C44C8C2509FDC190E0193 /* logo-PUC-85-anos-color.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,7 +87,7 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B373ED5351C1F6D4C7F1C0E2 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F7EAF6652E23E3B5F81155A9 /* eldorado.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = eldorado.png; sourceTree = "<group>"; };
-		F95C44C8C2509FDC190E0193 /* tic-em-trilhas.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "tic-em-trilhas.png"; sourceTree = "<group>"; };
+		F95C44C8C2509FDC190E0193 /* logo-PUC-85-anos-color.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "logo-PUC-85-anos-color.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,7 +124,7 @@
 				9133176C2C3BF90A666A5CA7 /* ShareViewController.swift */,
 				B373ED5351C1F6D4C7F1C0E2 /* Info.plist */,
 				F7EAF6652E23E3B5F81155A9 /* eldorado.png */,
-				F95C44C8C2509FDC190E0193 /* tic-em-trilhas.png */,
+				F95C44C8C2509FDC190E0193 /* logo-PUC-85-anos-color.png */,
 			);
 			name = ShareExtension;
 			path = ShareExtension;
@@ -307,7 +307,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A556E0182831B745B0245DF /* eldorado.png in Resources */,
-				B324F7B2B9ABDA7D34084007 /* tic-em-trilhas.png in Resources */,
+				B324F7B2B9ABDA7D34084007 /* logo-PUC-85-anos-color.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

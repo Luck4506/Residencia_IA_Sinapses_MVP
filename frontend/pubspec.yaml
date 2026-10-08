@@ -59,7 +59,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/eldorado.png
-    - assets/tic-em-trilhas.png
+    - assets/logo-PUC-85-anos-color.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -42,9 +42,11 @@ Entrada do XGBoost: **384 dimensões de embedding + 22 atributos + 6 clusters = 
 - `solicita_ligacao` foi removida da extração e das respostas.
 - `solicita_dados_cadastro = solicita_dados_pessoais OU solicita_atualizacao_cadastro`. As duas regras originais são reutilizadas internamente.
 - `carga_emocional` continua ordinal: baixa = 0, média = 1, alta = 2. Não foi convertida à força em binária na entrada do modelo.
-- A resposta inclui `score_golpe` (0–1), `probabilidade_percentual` (0–100), `classe`, `limiar`, `features_importantes`, `sinais_detectados`, `features`, `features_binarias`, `features_clusters` e `features_completas`.
+- A resposta inclui `score_golpe` (0–1), `probabilidade_percentual` (0–100), `classe`, `limiar`, `features_importantes`, `explicacao_sinais`, `sinais_detectados`, `features`, `features_binarias`, `features_clusters` e `features_completas`.
 - `features_importantes` contém até cinco atributos detectados que contribuíram positivamente para o risco nesta mensagem, ordenados por TreeSHAP. As contribuições são em margem do modelo, não porcentagens; não representam toda a explicação, pois texto e clusters também influenciam.
 - `features` conserva os valores exatos dos 22 atributos. `features_completas` adiciona os seis clusters. `features_binarias` mostra as 21 features binárias e três indicadores para as categorias emocionais.
+
+A interface apresenta o logo PUC-Campinas de 85 anos e um parágrafo curto (`explicacao_sinais`) que descreve os sinais destacados e sua importância. O texto é montado a partir de descrições fixas das features detectadas, sem gerar novos achados.
 
 ## Diagnóstico na interface
 

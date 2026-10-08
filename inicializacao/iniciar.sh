@@ -20,26 +20,13 @@ else:
 PYPORT
 )"
 export API_PORT="$PORTA"
+echo "Projeto Sinapses: $RAIZ"
+echo "Iniciando API na porta ${PORTA}..."
 "$RAIZ/inicializacao/iniciar_api.sh" &
 API_PID=$!
 trap 'kill "$API_PID" 2>/dev/null || true' EXIT
 trap 'exit 130' INT TERM
-"$RAIZ/backend/.venv/bin/python" - "$PORTA" "$API_PID" <<'PY'
-import json, sys, time, urllib.request, os
-port, pid = sys.argv[1], int(sys.argv[2])
-for _ in range(180):
-    os.kill(pid, 0)
-    try:
-        with urllib.request.urlopen(f'http://127.0.0.1:{port}/saude', timeout=2) as r:
-            status = json.load(r)
-        if not status['classificacao_disponivel']:
-            raise SystemExit('API indisponível: ' + '; '.join(status['pendencias']))
-        break
-    except (OSError, ValueError):
-        time.sleep(1)
-else:
-    raise SystemExit('A API não iniciou em três minutos. Confira o terminal.')
-PY
+"$RAIZ/backend/.venv/bin/python" -u "$RAIZ/inicializacao/aguardar_api.py" "$PORTA" "$API_PID"
 export API_URL="${API_URL:-http://127.0.0.1:$PORTA}"
 if [[ "${1:-web}" == iphone ]]; then
   "$RAIZ/inicializacao/iniciar_iphone.sh" "${2:-}"

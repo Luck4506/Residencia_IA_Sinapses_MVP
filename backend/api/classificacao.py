@@ -3,11 +3,12 @@ import re
 import numpy as np
 from xgboost import DMatrix
 from api.erros import Indisponivel
+from api.explicacao import explicar_sinais
 
 
 def classificar_features(mensagem, features, modelos):
     texto = re.sub(r"\s+", " ", mensagem.lower()).strip()
-    embedding = modelos.embedding.encode([texto], show_progress_bar=False)[0]
+    embedding = modelos.embedding.encode([texto], show_progress_bar=False)[0] # embbedding 
     nomes = modelos.config["nomes_atributos"]
     valores = [features[n] for n in nomes]
     clusters = [features[n] for n in modelos.config["nomes_features_clusters"]]
@@ -24,4 +25,5 @@ def classificar_features(mensagem, features, modelos):
     ], key=lambda item: item["contribuicao"], reverse=True)[:5]
     limiar = modelos.config["threshold"]
     return {"score_golpe": score, "probabilidade_percentual": round(score * 100, 2),
-            "limiar": limiar, "classe": int(score >= limiar), "features_importantes": importantes}
+            "limiar": limiar, "classe": int(score >= limiar), "features_importantes": importantes,
+            "explicacao_sinais": explicar_sinais(importantes)}

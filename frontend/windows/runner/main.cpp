@@ -29,7 +29,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1280, 720);
-  if (!window.Create(L"protitipo_tela_aplicacao", origin, size)) {
+  if (!window.Create(L"Projeto Sinapses", origin, size)) {
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);

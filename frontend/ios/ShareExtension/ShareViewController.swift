@@ -128,7 +128,7 @@ private struct SharedMessageView: View {
             HStack {
                 Button("Fechar", action: close).frame(minHeight: 44)
                 Spacer()
-                Text("Sinápses").font(.headline).foregroundColor(.primary)
+                Text("Projeto Sinapses").font(.headline).foregroundColor(.primary)
                 Spacer()
                 Button {
                     overrideScheme = dark ? .light : .dark
@@ -145,9 +145,8 @@ private struct SharedMessageView: View {
                     HStack {
                         logo("eldorado", label: "Instituto Eldorado").frame(width: 116, height: 36)
                         Spacer(minLength: 20)
-                        logo("tic-em-trilhas", label: "TIC em trilhas")
+                        logo("logo-PUC-85-anos-color", label: "PUC-Campinas — 85 anos")
                             .frame(width: 90, height: 36).padding(8)
-                            .background(Color(red: 0.894, green: 0.902, blue: 0.878)).cornerRadius(8)
                     }.padding(.bottom, 4)
                     VStack(alignment: .leading, spacing: 12) {
                         Text(result ? "RESULTADO DA AVALIAÇÃO" : "TEXTO RECEBIDO")
@@ -217,12 +216,12 @@ private struct SharedMessageView: View {
             }.padding(24).frame(maxWidth: .infinity).background(panelColor).cornerRadius(22)
             if let analysis {
                 Text("Principais sinais identificados").font(.headline)
-                if analysis.features_importantes.isEmpty {
-                    Text("Nenhum atributo estruturado detectado aumentou o risco nesta análise. O modelo também considera o texto completo.").font(.subheadline)
-                }
                 ForEach(analysis.features_importantes, id: \.feature) { item in
                     Text("• " + item.feature.replacingOccurrences(of: "_", with: " "))
                 }
+                Text(analysis.explicacao_sinais ?? "Confira os sinais destacados e confirme o pedido por um canal conhecido.")
+                    .font(.subheadline).foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
                 if settings["SHOW_DIAGNOSTICS"] != "false" {
                     DisclosureGroup("Diagnóstico: todas as features") {
                         Text("Uso interno. 0 = não detectado; 1 = detectado. Carga emocional exibida por categoria; o modelo recebe 0/1/2.").font(.caption)
@@ -254,6 +253,7 @@ private struct Analysis: Decodable {
     let score_golpe: Double
     let classe: Int
     let features_importantes: [ImportantFeature]
+    let explicacao_sinais: String?
     let features_binarias: [String: Int]
     let features_clusters: [String: Int]
     var diagnostic: [String: Int] { features_binarias.merging(features_clusters) { first, _ in first } }

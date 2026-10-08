@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-    title: 'Assistente de mensagens',
+    title: 'Projeto Sinapses',
     debugShowCheckedModeBanner: false,
     theme: makeTheme(Brightness.light),
     darkTheme: makeTheme(Brightness.dark),
@@ -230,19 +230,15 @@ class _AssistantFlowState extends State<AssistantFlow> {
                       semanticLabel: 'Instituto Eldorado',
                     ),
                     const Spacer(),
-                    Container(
+                    Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 8,
                       ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE4E6E0),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
                       child: Image.asset(
-                        'assets/tic-em-trilhas.png',
+                        'assets/logo-PUC-85-anos-color.png',
                         width: 90,
-                        semanticLabel: 'TIC em trilhas',
+                        semanticLabel: 'PUC-Campinas — 85 anos',
                       ),
                     ),
                   ],
@@ -263,15 +259,16 @@ class _AssistantFlowState extends State<AssistantFlow> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Text(
-                      'Sinápses',
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -1,
+                    Expanded(
+                      child: Text(
+                        'Projeto Sinapses',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -1,
+                        ),
                       ),
                     ),
-                    const Spacer(),
                     IconButton(
                       tooltip: Theme.of(context).brightness == Brightness.light
                           ? 'Ativar tema escuro'
@@ -565,15 +562,14 @@ class _AssistantFlowState extends State<AssistantFlow> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
-          if ((analysis!['features_importantes'] as List).isEmpty)
-            description(
-              'Nenhum atributo estruturado detectado aumentou o risco nesta análise. O modelo também considera o texto completo.',
-            ),
           for (final item in analysis!['features_importantes'] as List)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Text('• ${featureLabel(item["feature"] as String)}'),
             ),
+          const SizedBox(height: 8),
+          description(analysis!['explicacao_sinais'] as String? ??
+              'Confira os sinais destacados e confirme o pedido por um canal conhecido.'),
         ],
       ),
     ),
