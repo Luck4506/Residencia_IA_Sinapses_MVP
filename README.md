@@ -1,84 +1,160 @@
-# Sinápses MVP
+# Sinápses — MVP de análise de mensagens suspeitas
 
-Aplicação Flutter integrada à API Python e aos modelos treinados entregues. A análise usa o texto recebido, o extrator automático de 22 atributos, TF-IDF/K-means e XGBoost. Não há porcentagens demonstrativas nem treinamento durante a execução.
+O **Sinápses** é um protótipo de aplicativo que ajuda a pessoa a avaliar mensagens SMS potencialmente fraudulentas. A pessoa cola uma mensagem, recebe uma pontuação produzida por um classificador e vê sinais que merecem atenção, acompanhados de perguntas para incentivar uma decisão mais cuidadosa.
 
-## Iniciar neste computador
+> **Importante:** o resultado é uma estimativa do modelo, não uma confirmação de golpe ou de segurança. Uma mensagem legítima pode ser classificada como suspeita, e uma fraude pode passar despercebida. Confira solicitações por canais oficiais e não use a pontuação como única base para decidir.
 
-- **Navegador:** abra `Iniciar Web.command` e acesse http://localhost:8080.
-- **iPhone virtual:** abra `Iniciar iPhone.command`.
-- Os atalhos iniciam API e interface juntos. Encerre com Ctrl+C no terminal.
-- O atalho escolhe uma porta livre entre 8000 e 8010 para a API. Para fixar uma porta, use `API_PORT=8001 bash inicializacao/iniciar.sh web` (ou `iphone`).
+## Como funciona
 
-## Preparar em outro computador
+1. A pessoa cola o texto da mensagem no aplicativo.
+2. O aplicativo Flutter envia o texto à API local em Python.
+3. A API extrai atributos estruturados, calcula indicadores de agrupamento e executa o classificador treinado.
+4. A interface apresenta a pontuação, os sinais destacados e perguntas de reflexão antes de confiar na mensagem.
 
-Pré-requisitos: Python 3.12, Java 17 ou superior e Flutter compatível com Dart 3.13.2. Para iPhone, macOS e Xcode com simulador instalado. No macOS, XGBoost também requer a biblioteca OpenMP (`brew install libomp`, se ainda não estiver instalada).
+### Telas do protótipo
 
-Na raiz deste projeto:
+![Fluxo do aplicativo Sinápses: inserir mensagem, visualizar a pontuação, consultar sinais de risco e refletir antes de confiar](docs/images/fluxo-aplicativo.png)
 
-```sh
+*Da esquerda para a direita: colar a mensagem, análise e pontuação, sinais de risco e perguntas de conscientização. A porcentagem mostrada na tela é um exemplo de análise individual, não uma métrica geral de desempenho.*
+
+## Tecnologias
+
+- **Aplicativo:** Flutter e Dart.
+- **API:** Python e FastAPI.
+- **Classificação:** XGBoost.
+- **Representação textual:** embeddings do modelo `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`.
+- **Agrupamento auxiliar:** TF-IDF e K-means, com seis indicadores de cluster.
+- **Extração de sinais:** regras para atributos da mensagem e verificação gramatical local com LanguageTool.
+
+O modelo combina 384 dimensões de embedding, 22 atributos estruturados e seis indicadores de cluster, totalizando **412 valores de entrada**. A decisão de classe usa o limiar configurado de **0,55**.
+
+## Estrutura do repositório
+
+```text
+.
+├── frontend/                 # Aplicativo Flutter e projetos de plataforma
+│   └── lib/
+│       ├── main.dart         # Interface principal
+│       └── api.dart          # Comunicação com a API
+├── backend/
+│   ├── api/                  # Endpoints, serviço e inferência
+│   ├── extrator_features/    # Extração dos 22 atributos
+│   ├── modelos/v1/           # Artefatos pequenos do modelo
+│   ├── tests/                # Testes automatizados da API e do fluxo
+│   ├── requirements.txt
+│   └── requirements-dev.txt
+├── inicializacao/            # Preparação e inicialização do MVP
+├── Iniciar Web.command
+└── Iniciar iPhone.command
+```
+
+Documentação específica:
+- [Aplicativo Flutter](frontend/README.md)
+- [API, extração e modelo](backend/README.md)
+
+## Executar localmente
+
+### Requisitos
+
+- Python 3.12
+- Java 17 ou superior
+- Flutter compatível com Dart 3.13.2
+- Para executar o simulador de iPhone: macOS e Xcode com o simulador configurado
+- No macOS, se o XGBoost não encontrar OpenMP, instale a dependência com `brew install libomp`.
+
+### Preparação inicial
+
+Na raiz do projeto, execute:
+
+```bash
 bash inicializacao/preparar.sh
+```
+
+Esse processo cria o ambiente Python, instala as dependências, prepara o encoder e o LanguageTool local e baixa as dependências do Flutter. A primeira preparação precisa de internet e pode levar algum tempo, principalmente por causa do modelo de embeddings.
+
+### Iniciar no navegador
+
+```bash
 bash inicializacao/iniciar.sh web
 ```
 
-A preparação instala as dependências, baixa o encoder `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` exigido pelo treinamento e prepara o LanguageTool 6.8. Esses componentes ficam dentro de `backend/`; a primeira preparação exige internet. A inferência com os componentes locais não envia mensagens a serviços externos.
+Depois, abra [http://localhost:8080](http://localhost:8080). O script inicia a API e o aplicativo, escolhe uma porta disponível entre 8000 e 8010 para a API e encerra os processos com `Ctrl+C`.
 
-O ambiente `.venv`, o encoder (~470 MB), o LanguageTool e caches ficam fora do Git. Os seis artefatos treinados pequenos estão em `backend/modelos/v1/` e devem acompanhar o código. O script de preparação recria as dependências grandes após clonar. A pasta original `modelo treinado/` e o ZIP foram preservados para consulta; a aplicação não depende deles.
+Também é possível abrir `Iniciar Web.command` no macOS.
 
-## Organização
+### Iniciar no simulador de iPhone
 
-- `frontend/`: aplicativo Flutter, assets e projetos de plataforma; inclui a extensão de compartilhamento do iPhone.
-- `backend/api/main.py`: entrada FastAPI; `/saude`, `/extrair` e `/analisar`.
-- `backend/api/servico.py`: integra extração, agrupamento e inferência.
-- `backend/extrator_features/`: regras de extração e LanguageTool local.
-- `backend/modelos/v1/`: artefatos efetivamente usados na inferência.
-- `inicializacao/`: preparação e inicialização.
-
-Os módulos da API têm nomes importáveis normais. Execute a partir de `backend` com `.venv/bin/python -m uvicorn api.main:app`, ou prefira os atalhos.
-
-## Contrato do modelo e alterações
-
-Entrada do XGBoost: **384 dimensões de embedding + 22 atributos + 6 clusters = 412 valores**, na ordem de `xgboost_config.json`. Limiar entregue: **0,55**. A normalização textual, TF-IDF, distância aos centroides e codificação emocional seguem a rotina original de predição. Mensagens sem termos no vocabulário seguem a atribuição ao centro mais próximo do vetor zero, como no código entregue.
-
-- `solicita_ligacao` foi removida da extração e das respostas.
-- `solicita_dados_cadastro = solicita_dados_pessoais OU solicita_atualizacao_cadastro`. As duas regras originais são reutilizadas internamente.
-- `carga_emocional` continua ordinal: baixa = 0, média = 1, alta = 2. Não foi convertida à força em binária na entrada do modelo.
-- A resposta inclui `score_golpe` (0–1), `probabilidade_percentual` (0–100), `classe`, `limiar`, `features_importantes`, `explicacao_sinais`, `sinais_detectados`, `features`, `features_binarias`, `features_clusters` e `features_completas`.
-- `features_importantes` contém até cinco atributos detectados que contribuíram positivamente para o risco nesta mensagem, ordenados por TreeSHAP. As contribuições são em margem do modelo, não porcentagens; não representam toda a explicação, pois texto e clusters também influenciam.
-- `features` conserva os valores exatos dos 22 atributos. `features_completas` adiciona os seis clusters. `features_binarias` mostra as 21 features binárias e três indicadores para as categorias emocionais.
-
-A interface apresenta o logo PUC-Campinas de 85 anos e um parágrafo curto (`explicacao_sinais`) que descreve os sinais destacados e sua importância. O texto é montado a partir de descrições fixas das features detectadas, sem gerar novos achados.
-
-## Diagnóstico na interface
-
-A caixa **Diagnóstico: todas as features** inicia fechada, pode ser expandida e recolhida, e mostra todos os indicadores 0/1, incluindo os seis clusters. Existe no Flutter e na extensão do iPhone.
-
-Para ocultar completamente a caixa na versão destinada ao usuário final:
-
-```sh
-SHOW_DIAGNOSTICS=false bash inicializacao/iniciar.sh web
-# ou: SHOW_DIAGNOSTICS=false bash inicializacao/iniciar.sh iphone
+```bash
+bash inicializacao/iniciar.sh iphone
 ```
 
-Ao executar/compilar o Flutter diretamente, use `--dart-define=SHOW_DIAGNOSTICS=false`. A API continua retornando os dados para inspeção. A extensão do iPhone recebe a mesma configuração de compilação do Flutter.
+Ou abra `Iniciar iPhone.command` no macOS. É necessário ter o Xcode e um simulador configurados.
 
-## Rede
+Para fixar a porta da API, por exemplo:
 
-O padrão atende navegador e simulador de iPhone em `127.0.0.1:8000`; o emulador Android usa `10.0.2.2:8000` quando o Flutter é iniciado diretamente. Para celular físico, inicie a API com `API_HOST=0.0.0.0` e informe `--dart-define=API_URL=http://IP_DO_COMPUTADOR:8000` ao Flutter. Ambos devem estar na mesma rede. As permissões HTTP local estão habilitadas para este MVP.
+```bash
+API_PORT=8001 bash inicializacao/iniciar.sh web
+```
 
-CORS permite origens locais de navegador. Para outra origem, configure `CORS_ORIGINS` com a lista separada por vírgulas. `PASTA_MODELOS` permite escolher outra pasta de artefatos compatível.
+As instruções para Android, dispositivo físico e execução direta do Flutter estão em [frontend/README.md](frontend/README.md) e [backend/README.md](backend/README.md).
 
-## Verificação
+## API resumida
 
-```sh
+| Método | Rota | Finalidade |
+|---|---|---|
+| `GET` | `/saude` | Informa o estado dos componentes e a disponibilidade da classificação. |
+| `POST` | `/extrair` | Extrai atributos e indicadores de cluster sem retornar a classificação final. |
+| `POST` | `/analisar` | Extrai os sinais e retorna a pontuação e a classe calculadas pelo modelo. |
+
+As rotas `POST` recebem JSON no formato `{"mensagem": "texto da mensagem"}`. O texto deve conter de 1 a 5.000 caracteres úteis; entradas vazias ou acima do limite são rejeitadas.
+
+## Avaliação e limitações
+
+Na apresentação do projeto, o modelo foi avaliado em um conjunto de teste de 219 mensagens. A matriz de confusão registrada foi: 124 verdadeiros negativos, 2 falsos positivos, 10 falsos negativos e 83 verdadeiros positivos. A partir desses valores, a acurácia é **94,52%**, a precisão **97,65%**, o recall **89,65%** e o F1-score aproximadamente **93,26%**.
+
+Porém, esses números descrevem o conjunto de teste utilizado, não garantem o mesmo desempenho em mensagens encontradas no mundo real. 
+
+Outras limitações relevantes:
+
+- A classificação pode produzir falsos positivos e falsos negativos.
+- Os sinais exibidos são descrições fixas associadas a atributos detectados; não são explicações geradas por IA nem comprovam fraude por si só.
+- As contribuições de atributos apresentadas pelo backend não representam porcentagens de probabilidade e não explicam sozinhas toda a decisão do modelo.
+- O feedback de polegar é apenas local na interface: não é persistido e não retreina o modelo.
+- O projeto é um MVP e não deve ser tratado como mecanismo definitivo de segurança ou substituto da verificação por canais oficiais.
+
+## Privacidade e processamento
+
+A inferência foi preparada para usar localmente os componentes necessários, sem enviar o texto da mensagem a serviços externos durante a análise. A preparação inicial baixa dependências de software e o modelo de embeddings. Evite expor mensagens privadas em capturas de tela, issues ou logs compartilhados.
+
+
+
+## Testes
+
+Com o ambiente preparado, execute os testes do backend e do Flutter:
+
+```bash
 cd backend
 .venv/bin/python -m pip install -r requirements-dev.txt
 PYTHONPATH=. .venv/bin/python -m pytest tests/test_01_fluxo.py -q
+
 cd ../frontend
 flutter test
 ```
 
-Os testes cobrem união cadastral, remoção das features antigas, validação de texto, modelo real, codificação binária, CORS, tratamento de falhas de conexão e expansão/recolhimento do diagnóstico.
+Os testes do backend cobrem validação do texto, contrato dos atributos, classificação com o modelo carregado, codificação das features e CORS local. Os testes do Flutter cobrem a comunicação com a API e componentes da interface.
 
-No OneDrive, os scripts de iPhone colocam os arquivos de compilação em uma pasta temporária para evitar falhas de assinatura por metadados de sincronização. O código-fonte continua neste diretório.
+## Informações adicionais
+- **Contexto:** O Sinápses foi desenvolvido como parte do First Challenge da Residência em Inteligência Artificial, uma iniciativa do Instituto Eldorado em parceria com a PUC Campinas.
+- **Objetivo:** O projeto teve como objetivo desenvolver e aplicar conhecimentos de Inteligência Artificial no desenvolvimento de uma solução para um problema real.
+- **Status:** MVP Concluído e Apresentado (com possibilidades de continuidade).
+- **Ano:** 2026.
 
-O feedback de polegar é apenas local na tela; não há armazenamento ou retreinamento automático. A porcentagem é a saída do classificador entregue, não uma garantia de que a mensagem seja ou não golpe.
+## Autores
+
+- **Álvaro Santos de Almeida**
+- **Bruno Henrique de Almeida Lima**
+- **Lucas Soares Gonçalves**
+- **Leonid H. Mamani**  
+- **Maria Clara Rodrigues da Silva**
+- **Vicente Matheus Collin Pedroso**  
+
